@@ -1,0 +1,81 @@
+{##
+ # Order : operations
+ #}
+{{this.doRefundorDelete()}}
+<div class="line-4 clearfix">
+	{% if this.isShowRefundTitle() %}
+		<h2> Digiwallet Refunding </h2>
+	{% endif %}
+	{% if this.getRefundHistory() %}
+		<div class="widget items-list-table no-thead itemslist-model-orderitem order-items">
+		<table class="list" cellspacing="0">
+		   <thead>
+		      <tr>
+		         <th class="name">
+		            Message
+		         </th>
+		         <th class="price">
+		            Amount
+		         </th>
+		         <th class="amount">
+		            Status
+		         </th>
+		         <th class="total">
+		            Time
+		         </th>
+		         <th class="total">
+		         	Action
+		         </th>
+		      </tr>
+		   </thead>
+		{% for item in this.getRefundHistory() %}
+		
+		   <tbody class="lines">
+		      <tr class="line first ctrl-auto">
+		         <td class="cell name">
+		            {{item.refund_message}}
+		         </td>
+		         <td class="cell price">
+		            {{this.getOrder().currency.getPrefix()}}{{this.getOrder().currency.formatValue(item.refund_amount)}}
+		         </td>
+		         <td class="cell amount" style="text-transform: capitalize;">
+		            {{item.status}}
+		         </td>
+		         <td class="cell amount">
+		            {{this.formatDateTime(item.datetimestamp.date)}}
+		         </td>
+		         <td class="cell price">
+		            {% if item.status == 'success'%}
+		            	<a href="{{this.getCurrentUrlPath()}}?target=order&order_number={{this.getOrderNumber()}}&action_type=cancel-refund&refund_id={{item.refund_id}}">Cancel</a>
+		            {% endif %}
+		         </td>
+		      </tr>
+		      
+		   </tbody>
+		{% endfor %}		
+		</table>
+		</div>
+	{% endif %}
+	{% if this.canRefund() %}
+		<div class="">
+			<h3>Refund Note</h3> 
+			<textarea class="not-affect-recalculate form-control" id="refund-comment" name="refund-comment" rows="4" style="width: 50%;"></textarea>
+			<h3>
+				Refund Amount 
+				<span style="margin-top: 10px; font-size: 13px; font-style: italic;"> (You can refund to customer: {{this.getOrder().currency.getPrefix()}}{{this.getOrder().currency.formatValue(this.getRemainRefundAmount())}})
+				</span>
+			</h3>
+			<input class="not-affect-recalculate form-control" id="refund-amount" value="{{this.getRemainRefundAmount()}}" name="refund-amount" style="width: 50%;"/>
+			<button type="button" onclick="submit_refund()" name="refund-submit" value="Submit" class="btn  regular-main-button action submit submit" style="margin-top: 10px;"><span>Refund</span></button>
+		</div>
+	{% endif %}
+</div>
+<script language="javascript">
+	function submit_refund()
+	{
+		var amount = $("#refund-amount").val();
+		var message = encodeURIComponent($("#refund-comment").val());
+		var url = "{{this.getCurrentUrlPath()}}?action_type=refund&amount=" + amount + "&message=" + message + "&order_number={{this.getOrderNumber()}}&target=order";
+		window.location.href = url;
+	}
+</script>
