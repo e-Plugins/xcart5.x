@@ -22,6 +22,8 @@ namespace XLite\Module\Digiwallet\Payment\Base;
  */
 class TargetPayCore
 {
+    const APP_ID = 'dw_xcart.5.4.0.1';
+
     // Constants
     const MIN_AMOUNT = 84;
 
@@ -285,6 +287,7 @@ class TargetPayCore
         $url .= "&domain=" . urlencode($_SERVER["HTTP_HOST"]);
         $url .= "&returnurl=" . urlencode($this->returnUrl);
         $url .= "&reporturl=" . urlencode($this->reportUrl);
+        $url .= "&app_id=" . urlencode(self::APP_ID);
         $url .= ((! empty($this->salt)) ? "&salt=" . urlencode($this->salt) : "");
         $url .= ((! empty($this->cancelUrl)) ? "&cancelurl=" . urlencode($this->cancelUrl) : "");
         // Case by case

@@ -99,19 +99,19 @@ $success_text_nl = <<<HTML
 HTML;
 
 $check_language = "SELECT * FROM $sql_tbl[languages] WHERE code = 'en' and name = 'targetpay_bankwire_success_text' limit 1";
-if(mysql_num_rows(db_query($check_language)) != 1){
+if(mysqli_num_rows(db_query($check_language)) != 1){
     db_query("INSERT INTO $sql_tbl[languages] VALUES ('en','targetpay_bankwire_success_text',' ". addslashes($success_text_en) . "','Text')");
 }
 $check_language = "SELECT * FROM $sql_tbl[languages] WHERE code = 'nl' and name = 'targetpay_bankwire_success_text' limit 1";
-if(mysql_num_rows(db_query($check_language)) != 1){
+if(mysqli_num_rows(db_query($check_language)) != 1){
     db_query("INSERT INTO $sql_tbl[languages] VALUES ('nl','targetpay_bankwire_success_text',' ". addslashes($success_text_nl) . "','Text')");
 }
 $template_content = $success_text_en;
 // Check default customer site language
 $check_language = "SELECT * FROM $sql_tbl[config] WHERE name='default_customer_language'";
 $result_lng = db_query($check_language);
-if(mysql_num_rows($result_lng) == 1){
-    $result_lng = mysql_fetch_object($result_lng);
+if(mysqli_num_rows($result_lng) == 1){
+    $result_lng = mysqli_fetch_object($result_lng);
     if($result_lng->value == "nl"){
         $template_content = $success_text_nl;
     }
@@ -119,21 +119,21 @@ if(mysql_num_rows($result_lng) == 1){
 
 $sql = "SELECT * FROM `digiwallet_transactions` WHERE `digi_txid` = '" . $trxid . "' ORDER BY id DESC LIMIT 1";
 $result = db_query($sql);
-if (mysql_num_rows($result) != 1) {
+if (mysqli_num_rows($result) != 1) {
     func_header_location($current_location . DIR_CUSTOMER . "/error_message.php?error=error_ccprocessor_error&bill_message=Error, no entry found with transaction id: " . htmlspecialchars($trxid));
     exit();
 }
-$sale_result = mysql_fetch_object($result);
+$sale_result = mysqli_fetch_object($result);
 list($trxid, $accountNumber, $iban, $bic, $beneficiary, $bank) = explode("|", $sale_result->more);
 $userinfo = func_userinfo(0, $login_type, false, false, 'H');
 // Get order information
 $sql = "SELECT * FROM $sql_tbl[orders] WHERE `orderid` = '" . $sale_result->order_id . "'";
 $result = db_query($sql);
-if (mysql_num_rows($result) != 1) {
+if (mysqli_num_rows($result) != 1) {
     func_header_location($current_location . DIR_CUSTOMER . "/error_message.php?error=error_ccprocessor_error&bill_message=Error, no entry found with order id: " . htmlspecialchars($sale_result->order_id));
     exit();
 }
-$order_result = mysql_fetch_object($result);
+$order_result = mysqli_fetch_object($result);
 // Encode email address
 $emails = str_split($userinfo['email']);
 $counter = 0;

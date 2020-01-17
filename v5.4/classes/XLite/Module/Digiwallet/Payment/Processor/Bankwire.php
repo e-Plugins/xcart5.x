@@ -3,10 +3,11 @@
 
 /**
  * @file Provides support for Digiwallet iDEAL, Mister Cash, Sofort Banking, Credit and Paysafe
-*
-* @author Yellow Melon B.V.
-*         @url http://www.idealplugins.nl
-*/
+ *
+ * @author Yellow Melon B.V.
+ * @url http://www.idealplugins.nl
+ */
+
 namespace XLite\Module\Digiwallet\Payment\Processor;
 
 use XLite\Module\Digiwallet\Payment\Base\TargetPayPlugin;
@@ -17,6 +18,7 @@ class Bankwire extends TargetPayPlugin
      * The confirmation message after returning from Target page
      */
     private $confirmation_message = "";
+
     /**
      * The contructor
      */
@@ -53,6 +55,7 @@ class Bankwire extends TargetPayPlugin
     {
         return 'modules/Digiwallet/Payment/checkout/Bankwire.twig';
     }
+
     /**
      * return transaction process
      *
@@ -88,10 +91,10 @@ class Bankwire extends TargetPayPlugin
     public function doCustomReturnRedirect()
     {
         $request = \XLite\Core\Request::getInstance();
-        if(!empty($this->confirmation_message)){
-            if(!empty($request->show_warning)){
+        if (!empty($this->confirmation_message)) {
+            if (!empty($request->show_warning)) {
                 \XLite\Core\TopMessage::addRawWarning($this->confirmation_message);
-            }else{
+            } else {
                 echo $this->printConfirmInformation();
             }
         } else {
@@ -99,14 +102,15 @@ class Bankwire extends TargetPayPlugin
                 'checkoutSuccess',
                 '',
                 array(
-                    'order_number'  => $this->getOrder()->getOrderNumber(),
+                    'order_number' => $this->getOrder()->getOrderNumber(),
                     'payment' => 'bankwire'
                 )
-                );
+            );
             $this->doRedirect($url);
             exit(0);
         }
     }
+
     /**
      * use custom to redirect to another pay
      * {@inheritDoc}
@@ -115,9 +119,9 @@ class Bankwire extends TargetPayPlugin
     public function getReturnType()
     {
         $request = \XLite\Core\Request::getInstance();
-        if(!empty($request->sid)){
+        if (!empty($request->sid)) {
             $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findById($request->sid);
-            if(!empty($sale)){
+            if (!empty($sale)) {
                 return \XLite\Model\Payment\Base\WebBased::RETURN_TYPE_CUSTOM;
             }
         }
@@ -142,22 +146,26 @@ class Bankwire extends TargetPayPlugin
         }
         $isTest = $this->isTestMode($transaction->getPaymentMethod());
 
-        if ($request->cancel){
+        if ($request->cancel) {
             $this->setDetail('status', 'Customer has canceled checkout before completing their payments', 'Status');
             $transaction->setNote('Customer has canceled checkout before completing their payments');
             // Update transaction status
             $transaction->setStatus($transaction::STATUS_CANCELED);
             $transaction->getOrder()->setPaymentStatus($transaction::STATUS_CANCELED);
+            if (!$transaction->getOrder()->isNotificationSent()) {
+                \XLite\Core\Mailer::sendOrderCanceled($transaction->getOrder(), false);
+                $transaction->getOrder()->setIsNotificationSent(true);
+            }
             if (!empty($request->trxid)) {
                 $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findByTargetPayId($request->trxid);
-                if ($sale != null){
+                if ($sale != null) {
                     $sale->status = $transaction::STATUS_CANCELED;
                     \XLite\Core\Database::getRepo('\XLite\Module\Digiwallet\Payment\Model\TargetPaySale')->update($sale);
                     // Commit the transaction
                     \XLite\Core\Database::getEM()->flush();
                 }
             }
-            if($callback) {
+            if ($callback) {
                 echo "Customer has canceled checkout before completing their payments";
             } else {
                 $this->doRedirect(\XLite\Core\Converter::buildURL("checkout"));
@@ -166,23 +174,22 @@ class Bankwire extends TargetPayPlugin
         }
         // Process order status
         // Return from shop
-        if(!empty($request->sid)){
+        if (!empty($request->sid)) {
             $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findById($request->sid);
             // Return URL
-            if(!empty($sale))
-            {
-                if(!empty($sale->paid)){
+            if (!empty($sale)) {
+                if (!empty($sale->paid)) {
                     $url = \XLite\Core\Converter::buildURL(
                         'checkoutSuccess',
                         '',
                         array(
-                            'order_number'  => $transaction->getOrder()->getOrderNumber(),
+                            'order_number' => $transaction->getOrder()->getOrderNumber(),
                             'payment' => 'bankwire'
                         )
-                        );
+                    );
                     $this->doRedirect($url);
                     exit(0);
-                } elseif (!empty($sale->more)){
+                } elseif (!empty($sale->more)) {
                     list($trxid, $accountNumber, $iban, $bic, $beneficiary, $bank) = explode("|", $sale->more);
                     $sale->digi_txid = $trxid;
                     $sale->status = $transaction::STATUS_INPROGRESS;
@@ -203,9 +210,9 @@ class Bankwire extends TargetPayPlugin
         }
         $status_paid = false;
         // Check return from Digiwallet
-        if (!empty($request->trxid)){
+        if (!empty($request->trxid)) {
             $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findByTargetPayId($request->trxid);
-            if ($sale != null){
+            if ($sale != null) {
                 $this->initTargetPayment();
                 $paymentIsPartial = false;
                 $bw_paid_amount = 0;
@@ -227,7 +234,7 @@ class Bankwire extends TargetPayPlugin
                 }
                 */
                 $paid = @$this->digiCore->checkPayment($request->trxid);
-                if($paid) {
+                if ($paid) {
                     $consumber_info = $this->digiCore->getConsumerInfo();
                     if (!empty($consumber_info) && $consumber_info['bw_due_amount'] > 0) {
                         if ($consumber_info['bw_paid_amount'] < $consumber_info['bw_due_amount']) {
@@ -251,29 +258,39 @@ class Bankwire extends TargetPayPlugin
                     \XLite\Core\Database::getRepo('\XLite\Module\Digiwallet\Payment\Model\TargetPaySale')->update($sale);
                     \XLite\Core\Database::getEM()->flush();
                     // Update the order if transaction success
-                    if($paymentIsPartial) {
+                    if ($paymentIsPartial) {
                         $bt = $transaction->createBackendTransaction(\XLite\Model\Payment\BackendTransaction::TRAN_TYPE_SALE);
-                        $bt->setValue($bw_paid_amount/100);
+                        $bt->setValue($bw_paid_amount / 100);
                         $bt->setStatus($transaction::STATUS_SUCCESS);
                         \XLite\Core\Database::getEM()->flush();
                         $transaction->getOrder()->setPaymentStatus($transaction->getOrder()->getCalculatedPaymentStatus(true));
+                        // Send notification email
+                        if (!$transaction->getOrder()->isNotificationSent()) {
+                            \XLite\Core\Mailer::sendOrderProcessed($transaction->getOrder(), false);
+                            $transaction->getOrder()->setIsNotificationSent(true);
+                        }
                         \XLite\Core\Database::getEM()->flush();
-                        if($callback) {
+                        if ($callback) {
                             echo "Partially paid.";
                             die;
                         }
                     } else {
                         $transaction->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PAID);
+                        // Send notification email
+                        if (!$transaction->getOrder()->isNotificationSent()) {
+                            \XLite\Core\Mailer::sendOrderProcessed($transaction->getOrder(), false);
+                            $transaction->getOrder()->setIsNotificationSent(true);
+                        }
                         \XLite\Core\Database::getEM()->flush();
-                        if($callback) {
+                        if ($callback) {
                             echo "Fully paid.";
                             die;
                         }
                     }
-                } 
+                }
             }
         }
-        if(!$status_paid && $callback) {
+        if (!$status_paid && $callback) {
             echo "Not paid";
             exit(0);
         }
@@ -287,7 +304,7 @@ class Bankwire extends TargetPayPlugin
      */
     private function getResultMessage($sale, $transaction)
     {
-        if(!empty($sale->more)){
+        if (!empty($sale->more)) {
             list($trxid, $accountNumber, $iban, $bic, $beneficiary, $bank) = explode("|", $sale->more);
             $total_amount = $transaction->getOrder()->getTotal();
             // Encode email address
@@ -295,16 +312,16 @@ class Bankwire extends TargetPayPlugin
             $counter = 0;
             $customer_email = "";
             foreach ($emails as $char) {
-                if($counter == 0) {
+                if ($counter == 0) {
                     $customer_email .= $char;
                     $counter++;
-                } else if($char == "@") {
+                } else if ($char == "@") {
                     $customer_email .= $char;
                     $counter++;
-                } else if($char == "." && $counter > 1) {
+                } else if ($char == "." && $counter > 1) {
                     $customer_email .= $char;
                     $counter++;
-                } else if($counter > 2) {
+                } else if ($counter > 2) {
                     $customer_email .= $char;
                 } else {
                     $customer_email .= "*";
@@ -362,14 +379,14 @@ HTML;
      */
     private function checkLanguage($lbl_name, $translations = array('en' => '', 'nl' => ''))
     {
-        if(!\XLite\Core\Database::getRepo('\XLite\Model\LanguageLabel')->findOneByName($lbl_name)){
+        if (!\XLite\Core\Database::getRepo('\XLite\Model\LanguageLabel')->findOneByName($lbl_name)) {
             // Label not found
             $lbl = new \XLite\Model\LanguageLabel();
             $lbl->setName($lbl_name);
             $lbl = \XLite\Core\Database::getRepo('\XLite\Model\LanguageLabel')->insert($lbl);
             $objects = array();
             // Add translation
-            foreach ($translations as $code => $message){
+            foreach ($translations as $code => $message) {
                 $translation = $lbl->getTranslation($code);
                 $translation->setLabel($message);
                 $objects[] = $translation;

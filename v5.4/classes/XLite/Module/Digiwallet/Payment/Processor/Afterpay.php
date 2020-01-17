@@ -3,10 +3,11 @@
 
 /**
  * @file Provides support for Digiwallet iDEAL, Mister Cash, Sofort Banking, Credit and Paysafe
-*
-* @author Yellow Melon B.V.
-*         @url http://www.idealplugins.nl
-*/
+ *
+ * @author Yellow Melon B.V.
+ * @url http://www.idealplugins.nl
+ */
+
 namespace XLite\Module\Digiwallet\Payment\Processor;
 
 use XLite\Module\Digiwallet\Payment\Base\TargetPayPlugin;
@@ -37,6 +38,7 @@ class Afterpay extends TargetPayPlugin
      * @var unknown
      */
     protected $enrichment_url;
+
     /**
      * The contructor
      */
@@ -55,9 +57,9 @@ class Afterpay extends TargetPayPlugin
      */
     private function getTax($val)
     {
-        if(empty($val)) return 4; // No tax
-        else if($val >= 21) return 1;
-        else if($val >= 6) return 2;
+        if (empty($val)) return 4; // No tax
+        else if ($val >= 21) return 1;
+        else if ($val >= 6) return 2;
         else return 3;
     }
 
@@ -68,39 +70,43 @@ class Afterpay extends TargetPayPlugin
      * @param unknown $phone
      * @return unknown
      */
-    private static function format_phone($country, $phone) {
+    private static function format_phone($country, $phone)
+    {
         $function = 'format_phone_' . strtolower($country);
-        if(method_exists('XLite\Module\Digiwallet\Payment\Processor\Afterpay', $function)) {
+        if (method_exists('XLite\Module\Digiwallet\Payment\Processor\Afterpay', $function)) {
             return self::$function($phone);
-        }
-        else {
-            echo "unknown phone formatter for country: ". $function;
+        } else {
+            echo "unknown phone formatter for country: " . $function;
             exit;
         }
         return $phone;
     }
+
     /**
      * Format phone number
      *
      * @param unknown $phone
      * @return string|mixed
      */
-    private static function format_phone_nld($phone) {
+    private static function format_phone_nld($phone)
+    {
         // note: making sure we have something
-        if(!isset($phone{3})) { return ''; }
+        if (!isset($phone{3})) {
+            return '';
+        }
         // note: strip out everything but numbers
         $phone = preg_replace("/[^0-9]/", "", $phone);
         $length = strlen($phone);
-        switch($length) {
+        switch ($length) {
             case 9:
-                return "+31".$phone;
+                return "+31" . $phone;
                 break;
             case 10:
-                return "+31".substr($phone, 1);
+                return "+31" . substr($phone, 1);
                 break;
             case 11:
             case 12:
-                return "+".$phone;
+                return "+" . $phone;
                 break;
             default:
                 return $phone;
@@ -114,28 +120,32 @@ class Afterpay extends TargetPayPlugin
      * @param unknown $phone
      * @return string|mixed
      */
-    private static function format_phone_bel($phone) {
+    private static function format_phone_bel($phone)
+    {
         // note: making sure we have something
-        if(!isset($phone{3})) { return ''; }
+        if (!isset($phone{3})) {
+            return '';
+        }
         // note: strip out everything but numbers
         $phone = preg_replace("/[^0-9]/", "", $phone);
         $length = strlen($phone);
-        switch($length) {
+        switch ($length) {
             case 9:
-                return "+32".$phone;
+                return "+32" . $phone;
                 break;
             case 10:
-                return "+32".substr($phone, 1);
+                return "+32" . substr($phone, 1);
                 break;
             case 11:
             case 12:
-                return "+".$phone;
+                return "+" . $phone;
                 break;
             default:
                 return $phone;
                 break;
         }
     }
+
     /**
      * Breadown street address
      * @param unknown $street
@@ -146,7 +156,7 @@ class Afterpay extends TargetPayPlugin
         $out = [];
         $addressResult = null;
         preg_match("/(?P<address>\D+) (?P<number>\d+) (?P<numberAdd>.*)/", $street, $addressResult);
-        if(!$addressResult) {
+        if (!$addressResult) {
             preg_match("/(?P<address>\D+) (?P<number>\d+)/", $street, $addressResult);
         }
         $out['street'] = array_key_exists('address', $addressResult) ? $addressResult['address'] : null;
@@ -154,6 +164,7 @@ class Afterpay extends TargetPayPlugin
         $out['houseNumberAdd'] = array_key_exists('numberAdd', $addressResult) ? trim(strtoupper($addressResult['numberAdd'])) : null;
         return $out;
     }
+
     /**
      * Init some params for starting payment
      * {@inheritDoc}
@@ -167,16 +178,16 @@ class Afterpay extends TargetPayPlugin
         $total_amount_by_product = 0;
         foreach ($this->getOrder()->getItems() as $item) {
             $invoice_lines[] = [
-                'productCode' => (string) $item->getProduct()->getId(),
+                'productCode' => (string)$item->getProduct()->getId(),
                 'productDescription' => $item->getProduct()->getName(),
-                'quantity' => (int) $item->getAmount(),
-                'price' => (int) $item->getAmount() * $item->getPrice(),
+                'quantity' => (int)$item->getAmount(),
+                'price' => (int)$item->getAmount() * $item->getPrice(),
                 'taxCategory' => ($this->getOrder()->getSubtotal() > 0) ? $this->getTax(100 * $this->getOrder()->getSurchargeSum() / $this->getOrder()->getSubtotal()) : 3
             ];
-            $total_amount_by_product += (int) $item->getAmount() * $item->getPrice();
+            $total_amount_by_product += (int)$item->getAmount() * $item->getPrice();
         }
         // Update to fix the total amount and item price
-        if($total_amount_by_product < $this->transaction->getValue()){
+        if ($total_amount_by_product < $this->transaction->getValue()) {
             $invoice_lines[] = [
                 'productCode' => "000000",
                 'productDescription' => "Other fee (shipping, additional fees)",
@@ -186,7 +197,7 @@ class Afterpay extends TargetPayPlugin
             ];
         }
         // Add to payment data
-        if($invoice_lines != null && !empty($invoice_lines)){
+        if ($invoice_lines != null && !empty($invoice_lines)) {
             $this->digiCore->bindParam('invoicelines', json_encode($invoice_lines));
         }
         // Build billing address
@@ -203,11 +214,11 @@ class Afterpay extends TargetPayPlugin
         $shippingsurename = "";
         $shippingcountrycode = "";
         $shippingphonenumber = "";
-        foreach ($this->getOrder()->getAddresses() as $add){
+        foreach ($this->getOrder()->getAddresses() as $add) {
             /** @var \XLite\Model\Address $add */
-            if($add->getIsBilling()) {
+            if ($add->getIsBilling()) {
                 $item = $this->getAddressSectionData($add);
-                if(!empty($add->getCountry())){
+                if (!empty($add->getCountry())) {
                     $billingcountrycode = $add->getCountry()->getCode3();
                 }
                 $billingstreet = isset($item['street']) ? $item['street']['value'] : "";
@@ -218,9 +229,9 @@ class Afterpay extends TargetPayPlugin
                 $billingphonenumber = isset($item['phone']) ? " " . $item['phone']['value'] : "";
             }
             // Shipping address
-            if($add->getIsShipping()) {
+            if ($add->getIsShipping()) {
                 $item = $this->getAddressSectionData($add);
-                if(!empty($add->getCountry())){
+                if (!empty($add->getCountry())) {
                     $shippingcountrycode = $add->getCountry()->getCode3();
                 }
                 $shippingstreet = isset($item['street']) ? $item['street']['value'] : "";
@@ -236,7 +247,7 @@ class Afterpay extends TargetPayPlugin
         // Build shipping address
         $streetParts = self::breakDownStreet($billingstreet);
         $this->digiCore->bindParam('billingstreet', empty($streetParts['street']) ? $billingstreet : $streetParts['street']);
-        $this->digiCore->bindParam('billinghousenumber', $streetParts['houseNumber'].$streetParts['houseNumberAdd']);
+        $this->digiCore->bindParam('billinghousenumber', $streetParts['houseNumber'] . $streetParts['houseNumberAdd']);
         $this->digiCore->bindParam('billingpostalcode', $billingpostcode);
         $this->digiCore->bindParam('billingcity', $billingcity);
         $this->digiCore->bindParam('billingpersonemail', $this->getOrder()->getProfile()->getLogin());
@@ -250,7 +261,7 @@ class Afterpay extends TargetPayPlugin
         // Build shipping address
         $streetParts = self::breakDownStreet($shippingstreet);
         $this->digiCore->bindParam('shippingstreet', empty($streetParts['street']) ? $shippingstreet : $streetParts['street']);
-        $this->digiCore->bindParam('shippinghousenumber', $streetParts['houseNumber'].$streetParts['houseNumberAdd']);
+        $this->digiCore->bindParam('shippinghousenumber', $streetParts['houseNumber'] . $streetParts['houseNumberAdd']);
         $this->digiCore->bindParam('shippingpostalcode', $shippingpostcode);
         $this->digiCore->bindParam('shippingcity', $shippingcity);
         $this->digiCore->bindParam('shippingpersonemail', $this->getOrder()->getProfile()->getLogin());
@@ -269,8 +280,8 @@ class Afterpay extends TargetPayPlugin
     /**
      * Return specific data for address entry. Helper.
      *
-     * @param \XLite\Model\Address $address   Address
-     * @param boolean              $showEmpty Show empty fields OPTIONAL
+     * @param \XLite\Model\Address $address Address
+     * @param boolean $showEmpty Show empty fields OPTIONAL
      *
      * @return array
      */
@@ -283,33 +294,34 @@ class Afterpay extends TargetPayPlugin
             $method = 'get'
                 . \Includes\Utils\Converter::convertToCamelCase(
                     $field->getViewGetterName() ?: $field->getServiceName()
-                    );
-                $addressFieldValue = $address->{$method}();
+                );
+            $addressFieldValue = $address->{$method}();
 
-                switch ($field->getServiceName()) {
-                    case 'state_id':
-                        $addressFieldValue = $hasStates ? $addressFieldValue : null;
-                        if (null === $addressFieldValue && $hasStates) {
-                            $addressFieldValue = $address->getCustomState();
-                        }
-                        break;
+            switch ($field->getServiceName()) {
+                case 'state_id':
+                    $addressFieldValue = $hasStates ? $addressFieldValue : null;
+                    if (null === $addressFieldValue && $hasStates) {
+                        $addressFieldValue = $address->getCustomState();
+                    }
+                    break;
 
-                    case 'custom_state':
-                        $addressFieldValue = $hasStates ? null : $address->getCustomState();
-                        break;
-                    default:
-                }
+                case 'custom_state':
+                    $addressFieldValue = $hasStates ? null : $address->getCustomState();
+                    break;
+                default:
+            }
 
-                if (strlen($addressFieldValue) || $showEmpty) {
-                    $result[$field->getServiceName()] = array(
-                        'title'     => $field->getName(),
-                        'value'     => $addressFieldValue
-                    );
-                }
+            if (strlen($addressFieldValue) || $showEmpty) {
+                $result[$field->getServiceName()] = array(
+                    'title' => $field->getName(),
+                    'value' => $addressFieldValue
+                );
+            }
         }
 
         return $result;
     }
+
     /**
      * The setting widget
      *
@@ -333,6 +345,7 @@ class Afterpay extends TargetPayPlugin
     {
         return 'modules/Digiwallet/Payment/checkout/Afterpay.twig';
     }
+
     /**
      * return transaction process
      *
@@ -367,11 +380,12 @@ class Afterpay extends TargetPayPlugin
     private function getInvoiceID($request)
     {
         $invoiceID = $request->trxid;
-        if(empty($invoiceID)) {
+        if (empty($invoiceID)) {
             $invoiceID = $request->invoiceID;
         }
         return $invoiceID;
     }
+
     /**
      * Process Afterpay result
      *
@@ -389,22 +403,26 @@ class Afterpay extends TargetPayPlugin
         $isTest = $this->isTestMode($transaction->getPaymentMethod());
         $invoiceId = $this->getInvoiceID($request);
 
-        if ($request->cancel){
+        if ($request->cancel) {
             $this->setDetail('status', 'Customer has canceled checkout before completing their payments', 'Status');
             $transaction->setNote('Customer has canceled checkout before completing their payments');
             // Update transaction status
             $transaction->setStatus($transaction::STATUS_CANCELED);
             $transaction->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_CANCELED);
+            if (!$transaction->getOrder()->isNotificationSent()) {
+                \XLite\Core\Mailer::sendOrderCanceled($transaction->getOrder(), false);
+                $transaction->getOrder()->setIsNotificationSent(true);
+            }
             if (!empty($invoiceId)) {
                 $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findByTargetPayId($invoiceId);
-                if ($sale != null){
+                if ($sale != null) {
                     $sale->status = $transaction::STATUS_CANCELED;
                     \XLite\Core\Database::getRepo('\XLite\Module\Digiwallet\Payment\Model\TargetPaySale')->update($sale);
                     // Commit the transaction
                     \XLite\Core\Database::getEM()->flush();
                 }
             }
-            if($callback) {
+            if ($callback) {
                 echo "Customer has canceled checkout before completing their payments";
             } else {
                 $this->doRedirect(\XLite\Core\Converter::buildURL("checkout"));
@@ -413,23 +431,22 @@ class Afterpay extends TargetPayPlugin
         }
         // Process order status
         // Return from shop
-        if(!empty($request->sid)){
+        if (!empty($request->sid)) {
             $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findById($request->sid);
             // Return URL
-            if(!empty($sale))
-            {
-                if(!empty($sale->paid)){
+            if (!empty($sale)) {
+                if (!empty($sale->paid)) {
                     $url = \XLite\Core\Converter::buildURL(
                         'checkoutSuccess',
                         '',
                         array(
-                            'order_number'  => $transaction->getOrder()->getOrderNumber(),
+                            'order_number' => $transaction->getOrder()->getOrderNumber(),
                             'payment' => 'bankwire'
                         )
                     );
                     $this->doRedirect($url);
                     exit(0);
-                } elseif (!empty($sale->more)){
+                } elseif (!empty($sale->more)) {
                     list ($trxid, $status) = explode("|", $sale->more);
                     $sale->digi_txid = $trxid;
                     $sale->status = $transaction::STATUS_INPROGRESS;
@@ -442,7 +459,7 @@ class Afterpay extends TargetPayPlugin
                             // Show error message to customer page
                             $errors = new AfterpayValidationException(json_decode($this->reject_error, true));
                             $error_msg = $this->reject_error;
-                            if($errors->IsValidationError()){
+                            if ($errors->IsValidationError()) {
                                 $error_msg = "";
                                 foreach ($errors->getErrorItems() as $message) {
                                     $error_msg .= "<br/>";
@@ -468,14 +485,14 @@ class Afterpay extends TargetPayPlugin
         }
         $result = "";
         // Check return from Digiwallet
-        if (!empty($invoiceId)){
+        if (!empty($invoiceId)) {
             $sale = (new \XLite\Module\Digiwallet\Payment\Model\TargetPaySale())->findByTargetPayId($invoiceId);
-            if ($sale != null){
+            if ($sale != null) {
                 $this->initTargetPayment();
                 $result = @$this->digiCore->checkPayment($invoiceId);
                 $paymentStatus = false;
                 $result_code = substr($result, 0, 6);
-                if($result_code == "000000"){
+                if ($result_code == "000000") {
                     $result = substr($result, 7);
                     list ($invoiceKey, $invoicePaymentReference, $status) = explode("|", $result);
                     if (strtolower($status) == "captured") {
@@ -483,7 +500,7 @@ class Afterpay extends TargetPayPlugin
                     } elseif (strtolower($status) == "incomplete") {
                         list ($invoiceKey, $invoicePaymentReference, $status, $this->enrichment_url) = explode("|", $result);
                         // Redirect to enrichment user if not callback
-                        if(!$callback){
+                        if (!$callback) {
                             // Redirect to enrichment page
                             $this->doRedirect($this->enrichment_url);
                             exit(0);
@@ -491,11 +508,11 @@ class Afterpay extends TargetPayPlugin
                     } elseif (strtolower($status) == "rejected") {
                         list ($invoiceKey, $invoicePaymentReference, $status, $reject_reason, $this->reject_error) = explode("|", $result);
                         // Show error if return
-                        if(!$callback){
+                        if (!$callback) {
                             // Show error message to customer page
                             $errors = new AfterpayValidationException(json_decode($this->reject_error, true));
                             $error_msg = $this->reject_error;
-                            if($errors->IsValidationError()){
+                            if ($errors->IsValidationError()) {
                                 $error_msg = "";
                                 foreach ($errors->getErrorItems() as $message) {
                                     $error_msg .= "<br/>";
@@ -506,7 +523,7 @@ class Afterpay extends TargetPayPlugin
                         }
                     }
                 }
-                if($isTest) {
+                if ($isTest) {
                     // Don't set payment finished if test mode is enabled
                     //$paymentStatus = true;
                 }
@@ -526,12 +543,17 @@ class Afterpay extends TargetPayPlugin
                     // Update order tatus
                     $transaction->getOrder()->setPaymentStatusByTransaction($transaction);
                     $transaction->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PAID);
+                    // Send notification email
+                    if (!$transaction->getOrder()->isNotificationSent()) {
+                        \XLite\Core\Mailer::sendOrderProcessed($transaction->getOrder(), false);
+                        $transaction->getOrder()->setIsNotificationSent(true);
+                    }
                     // Commit the transaction
                     \XLite\Core\Database::getEM()->flush();
                 } else {
                     // Update transaction status
                     $transaction->setStatus($transaction::STATUS_INPROGRESS);
-                    if($callback) {
+                    if ($callback) {
                         echo "Not paid";
                         exit(0);
                     }
@@ -539,7 +561,7 @@ class Afterpay extends TargetPayPlugin
             } else {
                 $error_msg = $result;
                 $errors = new AfterpayValidationException($result);
-                if($errors->IsValidationError()){
+                if ($errors->IsValidationError()) {
                     $error_msg = "";
                     foreach ($errors->getErrorItems() as $message) {
                         $error_msg .= "<br/>";
@@ -547,7 +569,7 @@ class Afterpay extends TargetPayPlugin
                     }
                 }
                 \XLite\Core\TopMessage::addError($error_msg);
-                if($callback) {
+                if ($callback) {
                     echo $error_msg;
                     exit(0);
                 }

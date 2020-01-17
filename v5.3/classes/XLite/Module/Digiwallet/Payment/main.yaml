@@ -5,7 +5,7 @@
 # See http://www.idealplugins.nl for license detail
 #
 
-version: '5.4.0.1'
+version: 5.3.8
 type: payment
 authorName: 'Digiwallet'
 moduleName: 'Digiwallet Payment'

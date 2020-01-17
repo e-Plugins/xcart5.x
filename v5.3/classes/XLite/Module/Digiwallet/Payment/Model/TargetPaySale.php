@@ -54,7 +54,7 @@ class TargetPaySale extends \XLite\Model\AEntity
     protected $digi_txid;
 
     /**
-     * @Column (type="string", length=128, nullable=true)
+     * @Column (type="string", length=256, nullable=true)
      */
     protected $digi_response;
 

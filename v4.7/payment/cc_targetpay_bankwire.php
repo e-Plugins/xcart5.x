@@ -52,7 +52,7 @@ x_session_register('cart');
 // Check bankwire review status exists or not
 $sql = "SELECT * FROM $sql_tbl[custom_order_statuses] WHERE code = 'W'";
 $status_result = db_query($sql);
-if (mysql_num_rows($status_result) < 1) {
+if (mysqli_num_rows($status_result) < 1) {
     db_query("
         INSERT INTO $sql_tbl[custom_order_statuses] (`code`, `color`, `inactive_color`, `show_in_progress`, `only_when_active`, `reserve_products`, `notify_customer`, `notify_orders_dep`, `notify_provider`, `orderby`) VALUES
         ('W', '61C419', '6a6a6a', 'Y', 'N', 'Y', 'N', 'N', 'N', 40)
@@ -60,15 +60,15 @@ if (mysql_num_rows($status_result) < 1) {
 }
 $sql = "SELECT * FROM $sql_tbl[custom_order_statuses] WHERE code = 'W'";
 $status_result = db_query($sql);
-if(mysql_num_rows($status_result) == 1){
-    $status_result = mysql_fetch_object($status_result);
+if(mysqli_num_rows($status_result) == 1){
+    $status_result = mysqli_fetch_object($status_result);
     // insert language
     $check_language = "SELECT * FROM $sql_tbl[languages] WHERE code = 'en' and name = 'order_status_". $status_result->statusid ."_name' limit 1";
-    if(mysql_num_rows(db_query($check_language)) != 1){
+    if(mysqli_num_rows(db_query($check_language)) != 1){
         db_query("INSERT INTO $sql_tbl[languages] VALUES ('en','order_status_". $status_result->statusid ."_name','Awaiting Review','Labels')");
     }
     $check_language = "SELECT * FROM $sql_tbl[languages] WHERE code = 'nl' and name = 'order_status_". $status_result->statusid ."_name' limit 1";
-    if(mysql_num_rows(db_query($check_language)) != 1){
+    if(mysqli_num_rows(db_query($check_language)) != 1){
         db_query("INSERT INTO $sql_tbl[languages] VALUES ('nl','order_status_". $status_result->statusid ."_name','Awaiting Review','Labels')");
     }
 }

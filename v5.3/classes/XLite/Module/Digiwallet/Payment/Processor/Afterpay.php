@@ -170,10 +170,10 @@ class Afterpay extends TargetPayPlugin
                 'productCode' => (string) $item->getProduct()->getId(),
                 'productDescription' => $item->getProduct()->getName(),
                 'quantity' => (int) $item->getAmount(),
-                'price' => $item->getPrice(),
+                'price' => (int) $item->getAmount() * $item->getPrice(),
                 'taxCategory' => ($this->getOrder()->getSubtotal() > 0) ? $this->getTax(100 * $this->getOrder()->getSurchargeSum() / $this->getOrder()->getSubtotal()) : 3
             ];
-            $total_amount_by_product += $item->getPrice();
+            $total_amount_by_product += (int) $item->getAmount() * $item->getPrice();
         }
         // Update to fix the total amount and item price
         if($total_amount_by_product < $this->transaction->getValue()){

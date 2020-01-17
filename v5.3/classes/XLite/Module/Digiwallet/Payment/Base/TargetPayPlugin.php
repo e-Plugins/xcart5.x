@@ -166,7 +166,9 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
             exit(0);
         }
 
-        $this->digiCore->bindParam('email', $this->getOrder()->getProfile()->getLogin());
+        if(!empty($this->getOrder()->getProfile()) && !empty($this->getOrder()->getProfile()->getLogin())) {
+            $this->digiCore->bindParam('email', $this->getOrder()->getProfile()->getLogin());
+        }
         $this->digiCore->bindParam('userip', $_SERVER["REMOTE_ADDR"]);
         if(!empty($this->params)){
             foreach ($this->params as $key => $val){

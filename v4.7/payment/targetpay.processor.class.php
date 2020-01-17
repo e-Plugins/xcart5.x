@@ -102,7 +102,7 @@ class targetpay_processor
             $str = stripslashes($str);
         }
 
-        return mysql_real_escape_string(($str));
+        return mysqli_real_escape_string(($str));
     }
 
     /**
@@ -223,7 +223,7 @@ class targetpay_processor
         // Transaction ID check
         $sessionID_check = db_query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$sql_tbl[cc_pp3_data]' AND COLUMN_NAME = 'sessid'");
         $sessionName = 'sessionid';
-        if (mysql_num_rows($sessionID_check) > 0) {
+        if (mysqli_num_rows($sessionID_check) > 0) {
             $sessionName = 'sessid';
         }
         // Validate trxid
@@ -254,12 +254,12 @@ class targetpay_processor
 
             $sql = "SELECT * FROM `digiwallet_transactions` WHERE `digi_txid` = '" . $trxid . "' ORDER BY id DESC LIMIT 1";
             $result = db_query($sql);
-            if (mysql_num_rows($result) != 1) {
+            if (mysqli_num_rows($result) != 1) {
                 echo 'Error, No transaction found with id: ' . htmlspecialchars($trxid);
                 exit();
             }
 
-            $tpOrder = mysql_fetch_object($result);
+            $tpOrder = mysqli_fetch_object($result);
 
             include_once dirname(__FILE__) . '/targetpay.class.php';
             $digiCore = new TargetPayCore($this->target_processor_code, $module_params['param01'], "nl", $testmode);
@@ -309,19 +309,22 @@ class targetpay_processor
                     exit();
                 } else {
                     $sessionName = 'sessionid';
-                    if (mysql_num_rows($sessionID_check) > 0) {
+                    if (mysqli_num_rows($sessionID_check) > 0) {
                         $sessionName = 'sessid';
                     }
                     $query = db_query("SELECT * FROM $sql_tbl[cc_pp3_data] WHERE ref='$skey'");
                     $qResult = db_fetch_array($query);
                     db_query("UPDATE $sql_tbl[cc_pp3_data] SET param1 = 'error_message.php?$XCART_SESSION_NAME=$qResult[$sessionName]&error=error_ccprocessor_error&bill_message=Order+is+cancelled+', param3 = 'error' , is_callback = 'N' WHERE ref = '$skey'");
                     $top_message = array ('content' => $bill_message, 'type' => 'E');
-                    func_header_location('/cart.php?mode=checkout');
+                    func_header_location('../cart.php?mode=checkout');
                     exit();
                 }
             }
             elseif ($_GET['return'] == 'callback')
             {
+                if (! function_exists(func_change_order_status)) {
+                    include_once $xcart_dir . '/include/func/func.order.php';
+                }
                 // Update status to "processed"
                 if ($paid) {
                     func_change_order_status($tpOrder->order_id, 'P');
@@ -435,7 +438,7 @@ class targetpay_processor
 
             $sessionID_check = db_query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$sql_tbl[cc_pp3_data]' AND COLUMN_NAME = 'sessid'");
             $sessionName = 'sessionid';
-            if (mysql_num_rows($sessionID_check) > 0) {
+            if (mysqli_num_rows($sessionID_check) > 0) {
                 $sessionName = 'sessid';
             }
             if ($url) {
@@ -456,7 +459,7 @@ class targetpay_processor
                 // For older version, need to update table to add new field
                 $check_sql = "SHOW COLUMNS FROM `digiwallet_transactions` LIKE 'more';";
                 $result = db_query($check_sql);
-                if (mysql_num_rows($result) != 1) {
+                if (mysqli_num_rows($result) != 1) {
                     // Add more columns
                     $check_sql = "ALTER TABLE `digiwallet_transactions` ADD `more` TEXT default null;";
                     db_query($check_sql);
@@ -477,7 +480,7 @@ class targetpay_processor
             } else {
                 // Start payment error
                 $top_message = array ('content' => $digiCore->getErrorMessage(), 'type' => 'E');
-                func_header_location('/cart.php?mode=checkout');
+                func_header_location('../cart.php?mode=checkout');
                 exit();
             }
         }

@@ -3,11 +3,12 @@
 
 /**
  * @file Provides support for Digiwallet iDEAL, Mister Cash, Sofort Banking, Credit and Paysafe
-*
-* @author Yellow Melon B.V.
-*         @url http://www.idealplugins.nl
-*
-*/
+ *
+ * @author Yellow Melon B.V.
+ * @url http://www.idealplugins.nl
+ *
+ */
+
 namespace XLite\Module\Digiwallet\Payment\Base;
 
 use XLite\Module\Digiwallet\Payment\Base\TargetPayCore;
@@ -123,7 +124,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
      */
     protected function getRTLO()
     {
-        if (! empty($this->rtlo)) {
+        if (!empty($this->rtlo)) {
             return $this->rtlo;
         }
 
@@ -161,27 +162,27 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
     {
         $this->initTargetPayment();
         // Check the payment URL
-        if (! empty($this->digiCore->getBankUrl())) {
+        if (!empty($this->digiCore->getBankUrl())) {
             $this->doRedirect($this->digiCore->getBankUrl());
             exit(0);
         }
 
-        if(!empty($this->getOrder()->getProfile()) && !empty($this->getOrder()->getProfile()->getLogin())) {
+        if (!empty($this->getOrder()->getProfile()) && !empty($this->getOrder()->getProfile()->getLogin())) {
             $this->digiCore->bindParam('email', $this->getOrder()->getProfile()->getLogin());
         }
         $this->digiCore->bindParam('userip', $_SERVER["REMOTE_ADDR"]);
-        if(!empty($this->params)){
-            foreach ($this->params as $key => $val){
+        if (!empty($this->params)) {
+            foreach ($this->params as $key => $val) {
                 $this->digiCore->bindParam($key, $val);
             }
         }
         // Check to add CountryID for Sofort
-        if($this->payMethod == "DEB") {
-            if(empty($this->digiCore->getCountryId())) {
+        if ($this->payMethod == "DEB") {
+            if (empty($this->digiCore->getCountryId())) {
                 // Get billing country code
-                foreach ($this->getOrder()->getAddresses() as $add){
+                foreach ($this->getOrder()->getAddresses() as $add) {
                     /** @var \XLite\Model\Address $add */
-                    if($add->getIsBilling() && !empty($add->getCountry())) {
+                    if ($add->getIsBilling() && !empty($add->getCountry())) {
                         $this->digiCore->setCountryId(strtolower($add->getCountry()->getCode()));
                     }
                 }
@@ -204,11 +205,15 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
             // Set order status
             $order = $this->getOrder();
             $order->setShippingStatus(\XLite\Model\Order\Status\Shipping::STATUS_NEW);
-            $order->setOrderNumber(\XLite\Core\Database::getRepo('XLite\Model\Order')->findNextOrderNumber());
+            $order->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_QUEUED);
+            //$order->setOrderNumber(\XLite\Core\Database::getRepo('XLite\Model\Order')->findNextOrderNumber());
+            //$order->markAsOrder();
+            //\XLite\Core\Mailer::sendOrderCreated($this->getOrder(), false);
+
             \XLite\Core\Database::getEM()->persist($order);
             \XLite\Core\Database::getEM()->flush();
             // Return the URL
-            if(is_string($result)){
+            if (is_string($result)) {
                 $this->doRedirect($this->digiCore->getBankUrl());
                 exit(0);
             }
@@ -222,7 +227,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
         // Show error message
         $error_msg = $this->digiCore->getErrorMessage();
         // Check for afterpay error message
-        if($this->digiCore->getPayMethod() == "AFP"){
+        if ($this->digiCore->getPayMethod() == "AFP") {
             // Check exception for Afterpay
             $exception = new AfterpayValidationException($this->digiCore->getErrorMessage());
             if ($exception->IsValidationError()) {
@@ -302,9 +307,9 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
         }
         $isTest = $this->isTestMode($transaction->getPaymentMethod());
         $trxid = $request->trxid;
-        if($this->payMethod == "PYP") {
+        if ($this->payMethod == "PYP") {
             // Papal method
-            if($is_callback) {
+            if ($is_callback) {
                 // Report URL
                 $trxid = $request->acquirerID;
             } else {
@@ -312,7 +317,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
                 $trxid = $request->paypalid;
             }
         }
-        if(!isset($trxid) || empty($trxid)){
+        if (!isset($trxid) || empty($trxid)) {
             echo "No transaction found!";
             die;
         } else {
@@ -323,7 +328,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
                 return;
             }
             // Check current status of transaction
-            if($transaction->getStatus() === $transaction::STATUS_SUCCESS){
+            if ($transaction->getStatus() === $transaction::STATUS_SUCCESS) {
                 \XLite\Core\TopMessage::addInfo('Your transaction had been processed!');
                 return;
             }
@@ -335,15 +340,13 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
                 $status = $transaction::STATUS_SUCCESS;
                 // Update local as paid
                 $sale->paid = new \DateTime("now");
-                if($is_callback) {
+                if ($is_callback) {
                     echo "Order placed.";
                 }
-            }
-            elseif ($is_callback) {
+            } elseif ($is_callback) {
                 $status = $transaction::STATUS_INPROGRESS;
                 echo $this->digiCore->getErrorMessage();
-            }
-            else {
+            } else {
                 $status = $transaction::STATUS_PENDING;
                 $this->markCallbackRequestAsInvalid($this->digiCore->getErrorMessage());
                 \XLite\Core\TopMessage::addError($this->digiCore->getErrorMessage());
@@ -366,18 +369,23 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
                 \XLite\Core\Database::getEM()->flush();
                 // Update to mark transaction as Order
                 $transaction->getOrder()->markAsOrder();
+                // Send Mail
+                \XLite\Core\Mailer::sendOrderCreated($transaction->getOrder(), false);
                 // Update order tatus
                 $transaction->getOrder()->setPaymentStatusByTransaction($transaction);
+                if (!$transaction->getOrder()->isNotificationSent()) {
+                    \XLite\Core\Mailer::sendOrderProcessed($transaction->getOrder(), false);
+                    $transaction->getOrder()->setIsNotificationSent(true);
+                }
                 $transaction->getOrder()->setPaymentStatus(\XLite\Model\Order\Status\Payment::STATUS_PAID);
             }
             // Commit the transaction
             \XLite\Core\Database::getEM()->flush();
             // Validate redirections
-            if($is_callback) {
+            if ($is_callback) {
                 // Print message and finish
                 die;
-            }
-            elseif(!$paid) {
+            } elseif (!$paid) {
                 // Show checkout error message
                 $this->doRedirect(\XLite\Core\Converter::buildURL("checkout"));
                 exit(0);
@@ -393,7 +401,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
     {
         \XLite\Core\TopMessage::getInstance()->clearAJAX();
         header('ajax-response-status: 278');
-        if(\XLite\Core\Request::getInstance()->isAJAX()) {
+        if (\XLite\Core\Request::getInstance()->isAJAX()) {
             \XLite\Core\Event::getInstance()->display();
             \XLite\Core\Event::getInstance()->clear();
         }
