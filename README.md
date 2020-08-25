@@ -1,8 +1,8 @@
-# iDEAL plugin for X-Cart 5.4   
+# DigiWallet plugin for X-Cart 5.4   
 
 ## Usage
 Use this plugin to add support for iDEAL, Mister Cash, Sofort and other payment methods of 
-Digiwallet.com to your webstore. 
+DigiWallet to your webstore. 
 
 ## Installation
 
