@@ -130,3 +130,33 @@ XLite\Model\Payment\Method:
       - name: token
       - name: mode
         value: live
+
+  - service_name: 'Digiwallet.EPS'
+    class: Module\Digiwallet\Payment\Processor\EPS
+    type: C
+    orderby: -100
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - EPS'
+        title: 'EPS'
+    settings:
+      - name: rtlo
+      - name: token
+      - name: mode
+        value: live
+
+  - service_name: 'Digiwallet.GIP'
+    class: Module\Digiwallet\Payment\Processor\GIP
+    type: C
+    orderby: -100
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - GiroPay'
+        title: 'GiroPay'
+    settings:
+      - name: rtlo
+      - name: token
+      - name: mode
+        value: live

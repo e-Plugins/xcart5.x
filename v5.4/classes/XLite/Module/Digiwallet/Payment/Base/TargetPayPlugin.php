@@ -122,7 +122,7 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
     /**
      * Get RTLO setting
      */
-    protected function getRTLO()
+    public function getRTLO()
     {
         if (!empty($this->rtlo)) {
             return $this->rtlo;
@@ -134,9 +134,18 @@ class TargetPayPlugin extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
+     * Get RTLO setting
+     */
+    public function getApiToken()
+    {
+        $method = $this->transaction->getPaymentMethod();
+        return $method->getSetting('token');
+    }
+
+    /**
      * get the description of payment
      */
-    protected function getTransactionDescription()
+    public function getTransactionDescription()
     {
         return "Order #" . $this->getOrder()->order_id;
     }

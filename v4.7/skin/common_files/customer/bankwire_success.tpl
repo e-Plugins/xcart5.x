@@ -3,7 +3,7 @@
 vim: set ts=2 sw=2 sts=2 et:
 *}
 {assign var="template" value=$data['template_content']}
-{if !empty($lng.targetpay_bankwire_success_text)} 
-	{assign var="template" value=$lng.targetpay_bankwire_success_text}
+{if !empty($lng.digiwallet_bankwire_success_text)}
+	{assign var="template" value=$lng.digiwallet_bankwire_success_text}
 {/if}
 {$template|substitute:"amount":{currency value=$data['amount']}:"bic":$data['bic']:"beneficiary":$data['beneficiary']:"trxid":$data['trxid']:"email":$data['email']:"iban":$data['iban']:"bank":$data['bank']}
