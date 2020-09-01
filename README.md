@@ -7,7 +7,7 @@ DigiWallet to your webstore.
 ## Installation
 
 ### 1. Set up a Digiwallet account
-Before you can use the plugin, please sign up for a Digiwallet account on www.digiwallet.nl
+Before you can use the plugin, please sign up for a DigiWallet account on www.digiwallet.nl
 
 Currently iDEAL is offered for 29 eurocent per transaction, all inclusive without monthly or setup fees.
 
