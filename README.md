@@ -4,6 +4,22 @@
 Use this plugin to add support for iDEAL, Mister Cash, Sofort and other payment methods of 
 DigiWallet to your webstore. 
 
+## Supported Paymethods
+| Paymethod	|   supported	| 
+|-------------	|---	|
+| iDEAL	|:heavy_check_mark:	|
+| Bancontact	|:heavy_check_mark:	|
+| Creditcard	|:heavy_check_mark:	|
+| Paysafecard	|:heavy_check_mark:	|
+| Sofort	|:heavy_check_mark:	|
+| GiroPay	|:heavy_check_mark:	|
+| EPS	|:heavy_check_mark:	|
+| Paypal	|:heavy_check_mark:	|
+| Afterpay	|:heavy_check_mark:	|
+| Bankwire	|:heavy_check_mark:	|
+| Refund Creation	|:heavy_check_mark:	|
+| Refund Deletion	|:heavy_check_mark:	|
+
 ## Installation
 
 ### 1. Set up a Digiwallet account
