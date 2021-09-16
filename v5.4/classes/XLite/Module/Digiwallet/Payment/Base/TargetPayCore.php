@@ -2,7 +2,7 @@
 namespace XLite\Module\Digiwallet\Payment\Base;
 
 /**
- * @file Provides support for Digiwallet iDEAL, Mister Cash and Sofort Banking
+ * @file Provides support for Digiwallet iDEAL, Bancontact and Sofort
  *
  * @author Yellow Melon B.V.
  *         @url http://www.idealplugins.nl
@@ -22,7 +22,7 @@ namespace XLite\Module\Digiwallet\Payment\Base;
  */
 class TargetPayCore
 {
-    const APP_ID = 'dw_xcart.5.4.0.1';
+    const APP_ID = 'dw_xcart.5.4.0.3';
 
     // Constants
     const MIN_AMOUNT = 84;
@@ -33,7 +33,7 @@ class TargetPayCore
 
     const ERR_AMOUNT_TOO_LOW = "Bedrag is te laag | Amount is too low";
 
-    const ERR_NO_RTLO = "Geen DigiWallet Outlet Identifier bekend; controleer de module instellingen | No Digiwallet Outlet Identifier filled in, check the module settings";
+    const ERR_NO_RTLO = "Geen DigiWallet Outletcode bekend; controleer de module instellingen | No DigiWallet Outletcode filled in, check the module settings";
 
     const ERR_NO_TXID = "Er is een onjuist transactie ID opgegeven | An incorrect transaction ID was given";
 
@@ -65,7 +65,7 @@ class TargetPayCore
      *
      * a) 'IDE' + the bank ID's for iDEAL
      * b) 'MRC' for Mister Cash
-     * c) 'DEB' + countrycode for Sofort Banking, e.g. DEB49 for Germany
+     * c) 'DEB' + countrycode for Sofort, e.g. DEB49 for Germany
      */
     protected $minimumAmounts = array(
         "IDE" => 84,
@@ -80,13 +80,13 @@ class TargetPayCore
 
     public $descriptions = array(
         "IDE" => 'iDEAL',
-        "MRC" => 'Mister Cash',
-        "DEB" => 'Sofort Banking',
+        "MRC" => 'Bancontact',
+        "DEB" => 'Sofort',
         "WAL" => 'Paysafe Card',
         "CC" => "Credit Card",
         "PYP" => "Paypal",
         "AFP" => "Afterpay",
-        "BW" => "Bank Wire"
+        "BW" => "Bankwire - Overschrijvingen"
     );
 
     protected $checkAPIs = array(

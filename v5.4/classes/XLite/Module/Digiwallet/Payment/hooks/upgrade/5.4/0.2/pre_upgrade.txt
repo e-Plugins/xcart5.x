@@ -1,0 +1,1 @@
+In the new version of the plugin Digiwallet, the support for EPS and GIP has been implemented. More information on the use of the addon is available on README.md file or you find for more information at https://www.digiwallet.nl

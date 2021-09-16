@@ -1,11 +1,11 @@
 #
-# Provides support for Digiwallet iDEAL, Mister Cash, Sofort Banking, Credit and Paysafe
+# Provides support for Digiwallet iDEAL, Bancontact, Sofort, Creditcard and Paysafe
 #
 # Copyright (c) 2019 Yellow Melon B.V. All rights reserved.
 # See http://www.idealplugins.nl for license detail
 #
 
-version: '5.4.0.1'
+version: '5.4.0.3'
 type: payment
 authorName: 'Digiwallet'
 moduleName: 'Digiwallet Payment'

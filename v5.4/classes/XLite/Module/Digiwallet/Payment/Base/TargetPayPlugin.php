@@ -2,7 +2,7 @@
 // vim: set ts=4 sw=4 sts=4 et:
 
 /**
- * @file Provides support for Digiwallet iDEAL, Mister Cash, Sofort Banking, Credit and Paysafe
+ * @file Provides support for Digiwallet iDEAL, Bancontact, Sofort, Creditcard and Paysafe
  *
  * @author Yellow Melon B.V.
  * @url http://www.idealplugins.nl
