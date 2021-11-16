@@ -1,7 +1,7 @@
 # DigiWallet plugin for X-Cart 5.4   
 
 ## Usage
-Use this plugin to add support for iDEAL, Mister Cash, Sofort and other payment methods of 
+Use this plugin to add support for iDEAL, Bancontact, Sofort and other payment methods of 
 DigiWallet to your webstore. 
 
 ## Supported Paymethods
@@ -25,7 +25,7 @@ DigiWallet to your webstore.
 ### 1. Set up a Digiwallet account
 Before you can use the plugin, please sign up for a DigiWallet account on www.digiwallet.nl
 
-Currently iDEAL is offered for 29 eurocent per transaction, all inclusive without monthly or setup fees.
+Currently iDEAL is offered for 39 eurocent per transaction, all inclusive without monthly or setup fees.
 
 Note that the plugin can be used in a live environment only after it has been completed with your details and
 is approved by their compliance department. This would normally take about one working day.

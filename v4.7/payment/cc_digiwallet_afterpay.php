@@ -85,7 +85,7 @@ if($result['type'] == 'start_payment')
             // Do not remove as some payment calls take a lot of time
             x_session_save();
             // Redirect to sucess page message
-            func_header_location($xcart_catalogs['customer'] . "/cart.php?mode=order_message&orderids=" . $order_id);
+            func_header_location("../cart.php?mode=order_message&orderids=" . $order_id);
             exit();
         }
 

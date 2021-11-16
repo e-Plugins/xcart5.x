@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @file     Provides support for Digiwallet iDEAL, Mister Cash and Sofort Banking
+ * @file     Provides support for Digiwallet iDEAL, Bancontact & Sofort
 * @author     Yellow Melon B.V.
-* @url         http://www.idealplugins.nl
+* @url         http://www.e-plugins.nl
 * @release     11-09-2014
 * @ver         2.4
 *
@@ -31,7 +31,7 @@ class DigiwalletCore
 
     const ERR_AMOUNT_TOO_HIGH = "Bedrag is te hoog | Amount is too high";
 
-    const ERR_NO_RTLO = "Geen DigiWallet Outlet Identifier bekend; controleer de module instellingen | No Digiwallet Outlet Identifier filled in, check the module settings";
+    const ERR_NO_RTLO = "Geen DigiWallet Outletcode bekend; Ga naar: https://www.digiwallet.nl/nl/user/dashboard >> kies uw organisatie >> Websites & Outlets | No Digiwallet Outletcode filled in, Go to: https://www.digiwallet.nl/nl/user/dashboard >> choose your Organization >> Websites & Outlets";
 
     const ERR_NO_TXID = "Er is een onjuist transactie ID opgegeven | An incorrect transaction ID was given";
 
@@ -63,7 +63,7 @@ class DigiwalletCore
      *
      * a) 'IDE' + the bank ID's for iDEAL
      * b) 'MRC' for Mister Cash
-     * c) 'DEB' + countrycode for Sofort Banking, e.g. DEB49 for Germany
+     * c) 'DEB' + countrycode for Sofort, e.g. DEB49 for Germany
      */
     protected $minimumAmounts = array(
         "IDE"  => 84,
@@ -90,12 +90,12 @@ class DigiwalletCore
     public $descriptions = array(
         "IDE" => 'iDEAL',
         "MRC" => 'Mister Cash',
-        "DEB" => 'Sofort Banking',
+        "DEB" => 'Sofort',
         "WAL" => 'Paysafe Card',
         "CC" => "Credit Card",
         "PYP" => "Paypal",
         "AFP" => "Afterpay",
-        "BW" => "Bankwire"
+        "BW" => "Bankwire - Overschrijvingen"
     );
 
     protected $checkAPIs = array(

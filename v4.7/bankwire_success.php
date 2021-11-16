@@ -53,7 +53,7 @@ $smarty->assign('main', 'bankwire_main');
 
 $trxid = isset($_GET['trxid']) ? $_GET['trxid'] : "";
 if(empty($trxid)){
-    func_header_location($current_location . DIR_CUSTOMER . "/cart.php?mode=checkout");
+    func_header_location("cart.php?mode=checkout");
     exit();
 }
 $success_text_en = <<<HTML
@@ -61,15 +61,16 @@ $success_text_en = <<<HTML
     <h4>Thank you for ordering in our webshop!</h4>
     <p>
         You will receive your order as soon as we receive payment from the bank. <br>
-        Would you be so friendly to transfer the total amount of {{amount}}  to the bankaccount <b>
-        {{bic}} </b> in name of {{beneficiary}}* ?
+        Would you be so friendly to transfer the total amount of {{amount}}  to bankaccount <b>
+        {{iban}} </b> in name of {{beneficiary}}* ?
     </p>
     <p>
         State the payment feature <b>{{trxid}}</b>, this way the payment can be automatically processed.<br>
         As soon as this happens you shall receive a confirmation mail on {{email}}.
     </p>
     <p>
-        If it is necessary for payments abroad, then the BIC code from the bank {{iban}} and the name of the bank is {{bank}}.
+        If it is necessary for payments abroad, then the BIC code from the bank is {{bic}} and the name of the bank is {{bank}}.
+		Make sure you choose for costs abroad for your own account(option: OUR), otherwise the amount coming in will be to low.
     <p>
         <i>* Payment for our webstore is processed by TargetMedia. TargetMedia is certified as a Collecting Payment Service Provider by Currence. This means we set the highest security standards when is comes to security of payment for you as a customer and us as a webshop.</i>
     </p>
@@ -82,14 +83,14 @@ $success_text_nl = <<<HTML
     <p>
         U ontvangt uw bestelling zodra we de betaling per bank ontvangen hebben. <br>
         Zou u zo vriendelijk willen zijn het totaalbedrag van {{amount}} over te maken op bankrekening <b>
-		{{bic}} </b> t.n.v. {{beneficiary}}* ?
+		{{iban}} </b> t.n.v. {{beneficiary}}* ?
     </p>
     <p>
         Vermeld daarbij als betaalkenmerk <b>{{trxid}}</b>, zodat de betaling automatisch verwerkt kan worden.
-        Zodra dit gebeurd is ontvangt u een mail op {{email}} ter bevestiging.
+        Zodra dit gebeurd is, ontvangt u een email op {{email}} ter bevestiging.
     </p>
     <p>
-        Mocht het nodig zijn voor betalingen vanuit het buitenland, dan is de BIC code van de bank {{iban}} en de naam van de bank is '{{bank}}'.
+        Mocht het nodig zijn voor betalingen vanuit het buitenland, dan is de BIC code van de bank {{bic}} en de naam van de bank is '{{bank}}'.
         Zorg ervoor dat u kiest voor kosten in het buitenland voor eigen rekening (optie: OUR), anders zal het bedrag wat binnenkomt te laag zijn.
     <p>
         <i>* De betalingen voor onze webwinkel worden verwerkt door TargetMedia. TargetMedia is gecertificeerd als Collecting Payment Service Provider door Currence.

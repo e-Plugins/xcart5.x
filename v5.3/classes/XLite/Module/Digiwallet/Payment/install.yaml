@@ -9,7 +9,8 @@ XLite\Model\Payment\Method:
   - service_name: 'Digiwallet.iDEAL'
     class: Module\Digiwallet\Payment\Processor\iDEAL
     type: C
-    orderby: -104
+    orderby: -400010
+    adminOrderby: -400010
     enabled: 1
     translations:
       - code: en
@@ -17,14 +18,17 @@ XLite\Model\Payment\Method:
         title: 'iDEAL'
     settings:
       - name: rtlo
+        value: 156187
       - name: token
+        value: bf72755a648832f48f0995454
       - name: mode
         value: live
 
   - service_name: 'Digiwallet.Bancontact'
     class: Module\Digiwallet\Payment\Processor\Bancontact
     type: C
-    orderby: -103
+    orderby: -400009
+    adminOrderby: -400009
     enabled: 1
     translations:
       - code: en
@@ -32,94 +36,17 @@ XLite\Model\Payment\Method:
         title: 'Bancontact'
     settings:
       - name: rtlo
+        value: 156187
       - name: token
-      - name: mode
-        value: live
-
-
-  - service_name: 'Digiwallet.Creditcard'
-    class: Module\Digiwallet\Payment\Processor\Creditcard
-    type: C
-    orderby: -102
-    enabled: 1
-    translations:
-      - code: en
-        name: 'Digiwallet - Visa/Mastercard'
-        title: 'Visa/Mastercard'
-    settings:
-      - name: rtlo
-      - name: token
-      - name: mode
-        value: live
-
-
-  - service_name: 'Digiwallet.Paysafe'
-    class: Module\Digiwallet\Payment\Processor\Paysafe
-    type: C
-    orderby: -101
-    enabled: 1
-    translations:
-      - code: en
-        name: 'Digiwallet - PaysafeCard'
-        title: 'PaysafeCard'
-    settings:
-      - name: rtlo
-      - name: token
-      - name: mode
-        value: live
-
-
-  - service_name: 'Digiwallet.Sofort'
-    class: Module\Digiwallet\Payment\Processor\Sofort
-    type: C
-    orderby: -100
-    enabled: 1
-    translations:
-      - code: en
-        name: 'Digiwallet - Sofort'
-        title: 'Sofort'
-    settings:
-      - name: rtlo
-      - name: token
-      - name: mode
-        value: live
-
-
-  - service_name: 'Digiwallet.Paypal'
-    class: Module\Digiwallet\Payment\Processor\Paypal
-    type: C
-    orderby: -100
-    enabled: 1
-    translations:
-      - code: en
-        name: 'Digiwallet - PayPal'
-        title: 'PayPal'
-    settings:
-      - name: rtlo
-      - name: token
-      - name: mode
-        value: live
-
-
-  - service_name: 'Digiwallet.Bankwire'
-    class: Module\Digiwallet\Payment\Processor\Bankwire
-    type: C
-    orderby: -100
-    enabled: 1
-    translations:
-      - code: en
-        name: 'Digiwallet - Overschrijvingen'
-        title: 'Overschrijvingen'
-    settings:
-      - name: rtlo
-      - name: token
+        value: bf72755a648832f48f0995454
       - name: mode
         value: live
 
   - service_name: 'Digiwallet.Afterpay'
     class: Module\Digiwallet\Payment\Processor\Afterpay
     type: C
-    orderby: -100
+    orderby: -400008
+    adminOrderby: -400008
     enabled: 1
     translations:
       - code: en
@@ -127,14 +54,35 @@ XLite\Model\Payment\Method:
         title: 'Afterpay'
     settings:
       - name: rtlo
+        value: 156187
       - name: token
+        value: bf72755a648832f48f0995454
+      - name: mode
+        value: live
+
+  - service_name: 'Digiwallet.Bankwire'
+    class: Module\Digiwallet\Payment\Processor\Bankwire
+    type: C
+    orderby: -400007
+    adminOrderby: -400007
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - Overschrijvingen'
+        title: 'Overschrijvingen'
+    settings:
+      - name: rtlo
+        value: 156187
+      - name: token
+        value: bf72755a648832f48f0995454
       - name: mode
         value: live
 
   - service_name: 'Digiwallet.EPS'
     class: Module\Digiwallet\Payment\Processor\EPS
     type: C
-    orderby: -100
+    orderby: -400006
+    adminOrderby: -400006
     enabled: 1
     translations:
       - code: en
@@ -142,14 +90,17 @@ XLite\Model\Payment\Method:
         title: 'EPS'
     settings:
       - name: rtlo
+        value: 156187
       - name: token
+        value: bf72755a648832f48f0995454
       - name: mode
         value: live
 
   - service_name: 'Digiwallet.GIP'
     class: Module\Digiwallet\Payment\Processor\GIP
     type: C
-    orderby: -100
+    orderby: -400005
+    adminOrderby: -400005
     enabled: 1
     translations:
       - code: en
@@ -157,7 +108,80 @@ XLite\Model\Payment\Method:
         title: 'GiroPay'
     settings:
       - name: rtlo
+        value: 156187
       - name: token
+        value: bf72755a648832f48f0995454
       - name: mode
         value: live
 
+  - service_name: 'Digiwallet.Paysafe'
+    class: Module\Digiwallet\Payment\Processor\Paysafe
+    type: C
+    orderby: -400004
+    adminOrderby: -400004
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - PaysafeCard'
+        title: 'PaysafeCard'
+    settings:
+      - name: rtlo
+        value: 156187
+      - name: token
+        value: bf72755a648832f48f0995454
+      - name: mode
+        value: live
+
+  - service_name: 'Digiwallet.Paypal'
+    class: Module\Digiwallet\Payment\Processor\Paypal
+    type: C
+    orderby: -400003
+    adminOrderby: -400003
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - PayPal'
+        title: 'PayPal'
+    settings:
+      - name: rtlo
+        value: 156187
+      - name: token
+        value: bf72755a648832f48f0995454
+      - name: mode
+        value: live
+
+  - service_name: 'Digiwallet.Sofort'
+    class: Module\Digiwallet\Payment\Processor\Sofort
+    type: C
+    orderby: -400002
+    adminOrderby: -400002
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - Sofort'
+        title: 'Sofort'
+    settings:
+      - name: rtlo
+        value: 156187
+      - name: token
+        value: bf72755a648832f48f0995454
+      - name: mode
+        value: live
+
+  - service_name: 'Digiwallet.Creditcard'
+    class: Module\Digiwallet\Payment\Processor\Creditcard
+    type: C
+    orderby: -400001
+    adminOrderby: -400001
+    enabled: 1
+    translations:
+      - code: en
+        name: 'Digiwallet - Visa/Mastercard'
+        title: 'Visa/Mastercard'
+    settings:
+      - name: rtlo
+        value: 156187
+      - name: token
+        value: bf72755a648832f48f0995454
+      - name: mode
+        value: live

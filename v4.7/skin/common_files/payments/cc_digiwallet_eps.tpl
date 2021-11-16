@@ -9,7 +9,7 @@
             <table cellspacing="10">
 
                 <tr>
-                    <td>Digiwallet Outlet Identifier:</td>
+                    <td>Digiwallet Outletcode:</td>
                     <td><input type="text" name="param01" size="24" maxlength="20" value="{$module_data.param01|escape|default:93929}" /></td>
                 </tr>
 

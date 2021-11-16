@@ -7,7 +7,7 @@ require_once $xcart_dir . '/payment/digiwallet.processor.class.php';
  */
 function func_cc_digiwallet_bankwire_get_refund_mode($paymentid, $orderid)
 {
-	if((new digiwallet_processor("bankwire", "BW", "Digiwallet - Overschrijvingen"))->isRefundAvailable($paymentid, $orderid)) {
+	if((new digiwallet_processor("bankwire", "BW", "Digiwallet - Bankwire - Overschrijvingen"))->isRefundAvailable($paymentid, $orderid)) {
 		return "P";
 	}
 	return "";
@@ -20,7 +20,7 @@ function func_cc_digiwallet_bankwire_get_refund_mode($paymentid, $orderid)
  */
 function func_cc_digiwallet_bankwire_do_refund($order, $total)
 {
-	return (new digiwallet_processor("bankwire", "BW", "Digiwallet - Overschrijvingen"))->refund_order($order, $total);
+	return (new digiwallet_processor("bankwire", "BW", "Digiwallet - Bankwire - Overschrijvingen"))->refund_order($order, $total);
 }
 
 

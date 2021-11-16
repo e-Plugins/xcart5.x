@@ -303,7 +303,7 @@ class digiwallet_processor
                     $qResult = db_fetch_array($query);
                     db_query("UPDATE $sql_tbl[cc_pp3_data] SET param1 = 'error_message.php?$XCART_SESSION_NAME=$qResult[$sessionName]&error=error_ccprocessor_error&bill_message=Order+is+cancelled+', param3 = 'error' , is_callback = 'N' WHERE ref = '$skey'");
                     $top_message = array ('content' => $bill_message, 'type' => 'E');
-                    func_header_location('/cart.php?mode=checkout');
+                    func_header_location('../cart.php?mode=checkout');
                     exit();
                 }
             }
@@ -385,7 +385,7 @@ class digiwallet_processor
             } else {
                 // Start payment error
                 $top_message = array ('content' => $digiCore->getErrorMessage(), 'type' => 'E');
-                func_header_location('/cart.php?mode=checkout');
+                func_header_location('../cart.php?mode=checkout');
                 exit();
             }
         }
@@ -462,7 +462,7 @@ class digiwallet_processor
             // Update payment method
             db_query("UPDATE $sql_tbl[orders] SET payment_method = '$this->target_processor_method_name' WHERE orderid='" . $this->clean($x_order_id) . "' LIMIT 1");
             $skey = $tpOrder['order_id'];
-            // Return result to continue handle the response on child classes for Afterpay and Bankwire
+            // Return result to continue handle the response on child classes for Afterpay and Bankwire - Overschrijvingen
             if(in_array($digiCore->getPayMethod(), ["AFP", "BW"])){
                 return [
                     'type' => 'return_payment',
@@ -500,6 +500,7 @@ class digiwallet_processor
                     }
                     func_change_order_status($tpOrder['order_id'], 'P');
                     // Redirect to end order
+                    $xcart_catalogs['customer'] = "..";
                     include $xcart_dir . "/payment/payment_ccend.php";
                     exit();
                 } else {
@@ -511,12 +512,15 @@ class digiwallet_processor
                     $qResult = db_fetch_array($query);
                     db_query("UPDATE $sql_tbl[cc_pp3_data] SET param1 = 'error_message.php?$XCART_SESSION_NAME=$qResult[$sessionName]&error=error_ccprocessor_error&bill_message=Order+is+cancelled+', param3 = 'error' , is_callback = 'N' WHERE ref = '$skey'");
                     $top_message = array ('content' => $bill_message, 'type' => 'E');
-                    func_header_location('/cart.php?mode=checkout');
+                    func_header_location('../cart.php?mode=checkout');
                     exit();
                 }
             }
             elseif ($_GET['return'] == 'callback')
             {
+                if (! function_exists('func_change_order_status')) {
+                    include_once $xcart_dir . '/include/func/func.order.php';
+                }
                 // Update status to "processed"
                 if ($paid) {
                     func_change_order_status($tpOrder['order_id'], 'P');
@@ -658,7 +662,7 @@ class digiwallet_processor
                 }
                 $sql = "INSERT INTO `digiwallet_transactions` SET `order_id` = '" . $secure_oid[0] . "', `method` = '$this->target_processor_code', `amount` = '" . $amount . "', `digi_txid` = '" . $digiCore->getTransactionId() . "', `more` = '" . addslashes($digiCore->getMoreInformation()) . "'";
                 db_query($sql);
-                // Return result to continue handle the response on child classes for Afterpay and Bankwire
+                // Return result to continue handle the response on child classes for Afterpay and Bankwire - Overschrijvingen
                 if(in_array($digiCore->getPayMethod(), ["AFP", "BW"])){
                     return [
                         'type' => 'start_payment',
@@ -672,7 +676,7 @@ class digiwallet_processor
             } else {
                 // Start payment error
                 $top_message = array ('content' => $digiCore->getErrorMessage(), 'type' => 'E');
-                func_header_location('/cart.php?mode=checkout');
+                func_header_location('../cart.php?mode=checkout');
                 exit();
             }
         }
